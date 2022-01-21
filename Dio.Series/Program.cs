@@ -20,13 +20,13 @@ namespace Dio.Series
                         InserirSerie();
                         break;
                     case "3":
-
+                        AtualizarSerie();
                         break;
                     case "4":
-
+                        ExcluirSerie();
                         break;
                     case "5":
-
+                        VisualizarSerie();
                         break;
                     case "C":
                         Console.Clear();
@@ -77,7 +77,9 @@ namespace Dio.Series
             }
             foreach (var serie in lista)
             {
-                Console.WriteLine("#ID {0}: - {1}\n", serie.RetornaId(), serie.RetornaTitulo());
+                var excluido = serie.RetornaExcluido();             
+                Console.WriteLine("#ID {0}: - {1} - {2}\n", serie.RetornaId(), serie.RetornaTitulo(), excluido ? "*Excluído*" : "");
+                            
             }
         }
 
@@ -88,6 +90,23 @@ namespace Dio.Series
             Console.WriteLine("Inserir série");
             Console.ForegroundColor = ConsoleColor.White;
 
+            Serie novaSerie = RetornaSerie(repositorio.ProximoId());
+
+            repositorio.Insere(novaSerie);
+        }
+
+        private static void AtualizarSerie()
+        {
+            Console.Write("Digite o id da série: ");
+            int indiceSerie = int.Parse(Console.ReadLine());
+
+            Serie atualizaSerie = RetornaSerie(indiceSerie);
+
+            repositorio.Atualiza(indiceSerie, atualizaSerie);
+        }
+
+        private static Serie RetornaSerie(int indiceSerie)
+        {
             foreach (int i in Enum.GetValues(typeof(Genero)))
             {
                 Console.WriteLine("{0}-{1}", i, Enum.GetName(typeof(Genero), i));
@@ -104,16 +123,28 @@ namespace Dio.Series
 
             Console.Write("Digite a descrição da série: ");
             string entradaDescricao = Console.ReadLine();
+            Console.WriteLine();
 
-            Serie novaSerie = new Serie(id: repositorio.ProximoId(), 
-                                        genero: (Genero)entradaGenero, 
-                                        titulo: entradaTitulo, 
-                                        ano: entradaAno, 
-                                        descricao: entradaDescricao);
-
-            repositorio.Insere(novaSerie);
+            Serie serie = new Serie(indiceSerie, (Genero)entradaGenero, entradaTitulo, entradaDescricao, entradaAno);
+            return serie;
         }
 
+        private static void ExcluirSerie()
+        {
+            Console.Write("Digite o id da série: ");
+            int indiceSerie = int.Parse(Console.ReadLine());
 
+            repositorio.Exclui(indiceSerie);
+        }
+
+        private static void VisualizarSerie()
+        {
+            Console.Write("Digite o id da série: ");
+            int indiceSerie = int.Parse(Console.ReadLine());
+
+            var serie = repositorio.RetornaPorId(indiceSerie);
+
+            Console.WriteLine(serie);
+        }
     }
 }
